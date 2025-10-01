@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat App :: SocketIO</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <header>
+        Chat App <br>
+        <div>
+            Dengan SocketIO & ExpressJS
+        </div>
+    </header>
+    <ul id="messages"></ul>
+
+    <form id="form" action="">
+        <input id="input" autocomplete="off" placeholder="Tulis pesan..." />
+        <button type="submit">Kirim</button>
+    </form>
+    <footer>
+        Fredy Tri Ramadhan :: Ivan Wahyu Nugroho
+    </footer>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        const messages = document.getElementById('messages');
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+
+        let myId = null;
+
+        socket.on('connect', () => {
+            myId = socket.id;
+        });
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (input.value.trim()) {
+                const now = new Date();
+                const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                socket.emit('chat message', { msg: input.value.trim(), sender: myId, time });
+                input.value = '';
+            }
+        });
+
+        socket.on('chat message', function (data) {
+            const item = document.createElement('li');
+            item.classList.add(data.sender === myId ? 'me' : 'other');
+
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('message-wrapper');
+
+            const avatar = document.createElement('div');
+            avatar.classList.add('avatar');
+
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble');
+            bubble.textContent = data.msg;
+
+            const timestamp = document.createElement('span');
+            timestamp.classList.add('timestamp');
+            timestamp.textContent = data.time || '';
+
+            wrapper.appendChild(avatar);
+            bubble.appendChild(timestamp);
+            wrapper.appendChild(bubble);
+            item.appendChild(wrapper);
+            messages.appendChild(item);
+
+            messages.scrollTop = messages.scrollHeight;
+        });
+    </script>
+</body>
+</html>
