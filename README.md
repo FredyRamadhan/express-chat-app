@@ -152,7 +152,7 @@ NODE_ENV=production
 
 ## 📊 Flow Diagram
 
-```mermaid
+```
 Client Action               Server Processing              Other Clients
      │                           │                           │
      ├─ Connect ────────────────► │                           │
